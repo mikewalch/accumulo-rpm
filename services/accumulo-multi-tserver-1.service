@@ -1,0 +1,13 @@
+[Unit]
+Description=Apache Accumulo TServer service
+After=syslog.target network.target
+
+[Service]
+User=accumulo
+Group=accumulo
+Environment=ACCUMULO_OPTS=-Daccumulo.service.instance=1
+ExecStart=/usr/bin/accumulo tserver
+SuccessExitStatus=143
+
+[Install]
+WantedBy=multi-user.target

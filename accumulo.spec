@@ -15,6 +15,8 @@ Source2: %{name}-tserver.service
 Source3: %{name}-gc.service
 Source4: %{name}-tracer.service
 Source5: %{name}-monitor.service
+Source6: %{name}-multi-tserver-1.service
+Source7: %{name}-multi-tserver-2.service
 
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 
@@ -24,19 +26,23 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 %prep
 %setup -q
 
+
 %build
 # Empty section.
 
 %install
 rm -rf %{buildroot}
-mkdir -p  %{buildroot}/usr/bin
-mkdir -p  %{buildroot}/etc
-mkdir -p  %{buildroot}/opt/accumulo-%{version}
-cp -a bin conf lib docs %{buildroot}/opt/accumulo-%{version}/
+install -d -m 755  %{buildroot}/%{_bindir}
+install -d -m 755  %{buildroot}/%{_sysconfdir}/%{name}
+install -d -m 755  %{buildroot}/%{_var}/log/%{name}
+install -d -m 755  %{buildroot}/%{_datadir}/%{name}
+cp -a bin lib docs %{buildroot}/%{_datadir}/%{name}/
+sed -i -e 's/conf="\${basedir}\/conf"/conf="\/etc\/accumulo"/' %{buildroot}%{_datadir}/%{name}/bin/%{name}
+cp -a conf/examples %{buildroot}/%{_sysconfdir}/%{name}/
+sed -i -e 's/export ACCUMULO_LOG_DIR=.*/export ACCUMULO_LOG_DIR=\/var\/log\/accumulo/' %{buildroot}/%{_sysconfdir}/%{name}/examples/%{name}.conf
 
 # create sym links
-ln -s /opt/accumulo-%{version}/bin/accumulo %{buildroot}/%{_bindir}/accumulo 
-ln -s /opt/accumulo-%{version}/conf %{buildroot}/%{_sysconfdir}/accumulo
+ln -s %{_datadir}/%{name}/bin/%{name} %{buildroot}/%{_bindir}/%{name} 
 
 # systemd services
 install -d -m 755 %{buildroot}%{_unitdir}
@@ -45,16 +51,22 @@ install -p -m 644 %{SOURCE2} %{buildroot}%{_unitdir}/%{name}-tserver.service
 install -p -m 644 %{SOURCE3} %{buildroot}%{_unitdir}/%{name}-gc.service
 install -p -m 644 %{SOURCE4} %{buildroot}%{_unitdir}/%{name}-tracer.service
 install -p -m 644 %{SOURCE5} %{buildroot}%{_unitdir}/%{name}-monitor.service
+install -p -m 644 %{SOURCE6} %{buildroot}%{_unitdir}/%{name}-multi-tserver-1.service
+install -p -m 644 %{SOURCE7} %{buildroot}%{_unitdir}/%{name}-multi-tserver-2.service
 
 %clean
 rm -rf %{buildroot}
 
 %files
-%defattr(-,accumulo,accumulo,-)
-/opt/accumulo-%{version}/*
-%{_bindir}/accumulo
-%{_sysconfdir}/*
-%{_unitdir}/accumulo-*.service
+%{_bindir}/%{name}
+%{_datadir}/%{name}
+%{_unitdir}/%{name}-*.service
+%attr(-, %{name}, -) %{_sysconfdir}/%{name}
+%attr(-, %{name}, -) %{_var}/log/%{name}
+
+%pre
+getent group %{name} >/dev/null || groupadd -r %{name}
+getent passwd %{name} >/dev/null || useradd --comment "%{longproj}" --shell /sbin/nologin -M -r -g %{name} 
 
 %preun
 %systemd_preun %{name}-master.service
@@ -62,6 +74,8 @@ rm -rf %{buildroot}
 %systemd_preun %{name}-gc.service
 %systemd_preun %{name}-tracer.service
 %systemd_preun %{name}-monitor.service
+%systemd_preun %{name}-multi-tserver-1.service
+%systemd_preun %{name}-multi-tserver-2.service
 
 %postun
 %systemd_postun_with_restart %{name}-master.service
@@ -69,3 +83,5 @@ rm -rf %{buildroot}
 %systemd_postun_with_restart %{name}-gc.service
 %systemd_postun_with_restart %{name}-tracer.service
 %systemd_postun_with_restart %{name}-monitor.service
+%systemd_postun_with_restart %{name}-multi-tserver-1.service
+%systemd_postun_with_restart %{name}-multi-tserver-2.service
