@@ -101,8 +101,8 @@ Currently, the RPM has been tested to work with following versions of Accumulo &
    hardware. To execute each tablet server on its own processer core, add the following to 
    `/usr/lib/systemd/system/accumulo-multi-tserver-1.service`:
 
-      Environment="ACCUMULO_JAVA_PREFIX=numactl --physcpubind 0"
+        Environment="ACCUMULO_JAVA_PREFIX=numactl --physcpubind 0"
 
    And add the following to `/usr/lib/systemd/system/accumulo-multi-tserver-2.service`
 
-      Environment="ACCUMULO_JAVA_PREFIX=numactl --physcpubind 1"
+        Environment="ACCUMULO_JAVA_PREFIX=numactl --physcpubind 1"
