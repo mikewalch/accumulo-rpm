@@ -10,8 +10,25 @@ EOF
 fi
 source ~/.bashrc
 
+function verify_hash() {
+  tarball=$1
+  expected_hash=$2
+  if [[ ! -f "$tarball" ]]; then
+    echo "The tarball $tarball does not exist"
+    exit 1
+  fi
+  actual_hash=$(sha256sum "$tarball" | awk '{print $1}')
+  if [[ "$actual_hash" != "$expected_hash" ]]; then
+    echo "The actual checksum ($actual_hash) of $tarball does not match the expected checksum ($expected_hash)"
+    exit 1
+  fi
+}
+
 wget -c http://apache.claz.org/hadoop/common/hadoop-2.7.3/hadoop-2.7.3.tar.gz
+verify_hash hadoop-2.7.3.tar.gz d489df3808244b906eb38f4d081ba49e50c4603db03efd5e594a1e98b09259c2
+
 wget -c http://apache.claz.org/zookeeper/zookeeper-3.4.9/zookeeper-3.4.9.tar.gz
+verify_hash zookeeper-3.4.9.tar.gz e7f340412a61c7934b5143faef8d13529b29242ebfba2eba48169f4a8392f535
 
 HADOOP_PREFIX=/opt/hadoop-2.7.3
 ZOOKEEPER_HOME=/opt/zookeeper-3.4.9
