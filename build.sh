@@ -24,7 +24,7 @@ mkdir -p tmp/{SOURCES,SPECS,BUILD,RPMS}
 cp $tarball tmp/SOURCES/
 cp services/*.service tmp/SOURCES/
 pushd tmp
-rpmbuild --define "_topdir `pwd`" -bb "../accumulo.spec"
+rpmbuild --define "_topdir `pwd`" -ba "../accumulo.spec"
 popd
 
 mv tmp/RPMS/x86_64/accumulo-*.rpm testing/

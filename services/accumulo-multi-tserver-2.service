@@ -5,7 +5,7 @@ After=syslog.target network.target
 [Service]
 User=accumulo
 Group=accumulo
-Environment=ACCUMULO_OPTS=-Daccumulo.service.instance=2
+Environment=ACCUMULO_SERVICE_INSTANCE=2
 ExecStart=/usr/bin/accumulo tserver
 SuccessExitStatus=143
 

@@ -5,7 +5,7 @@
 Name:    accumulo
 Version: 2.0.0
 Release: 1
-Summary: A software platform for processing vast amounts of data
+Summary: A sorted, distributed key/value store
 License: ASL 2.0
 Group:   Development/Tools
 URL:     https://%{name}.apache.org
@@ -26,23 +26,26 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 %prep
 %setup -q
 
-
 %build
 # Empty section.
 
 %install
 rm -rf %{buildroot}
 install -d -m 755  %{buildroot}/%{_bindir}
-install -d -m 755  %{buildroot}/%{_sysconfdir}/%{name}
+install -d -m 755  %{buildroot}/%{_sysconfdir}/
 install -d -m 755  %{buildroot}/%{_var}/log/%{name}
 install -d -m 755  %{buildroot}/%{_datadir}/%{name}
-cp -a bin lib docs %{buildroot}/%{_datadir}/%{name}/
+install -d -m 755  %{buildroot}/%{_datadir}/%{name}/bin
+cp -a bin/{%{name},%{name}-util} %{buildroot}/%{_datadir}/%{name}/bin/
 sed -i -e 's/conf="\${basedir}\/conf"/conf="\/etc\/accumulo"/' %{buildroot}%{_datadir}/%{name}/bin/%{name}
-cp -a conf/examples %{buildroot}/%{_sysconfdir}/%{name}/
-sed -i -e 's/export ACCUMULO_LOG_DIR=.*/export ACCUMULO_LOG_DIR=\/var\/log\/accumulo/' %{buildroot}/%{_sysconfdir}/%{name}/examples/%{name}.conf
+sed -i -e 's/conf="\${basedir}\/conf"/conf="\/etc\/accumulo"/' %{buildroot}%{_datadir}/%{name}/bin/%{name}-util
+cp -a lib docs %{buildroot}/%{_datadir}/%{name}/
+cp -a conf %{buildroot}/%{_sysconfdir}/%{name}
+sed -i -e 's/export ACCUMULO_LOG_DIR=.*/export ACCUMULO_LOG_DIR=\/var\/log\/accumulo/' %{buildroot}/%{_sysconfdir}/%{name}/%{name}-env.sh
 
 # create sym links
 ln -s %{_datadir}/%{name}/bin/%{name} %{buildroot}/%{_bindir}/%{name} 
+ln -s %{_datadir}/%{name}/bin/%{name}-util %{buildroot}/%{_bindir}/%{name}-util 
 
 # systemd services
 install -d -m 755 %{buildroot}%{_unitdir}
@@ -59,6 +62,7 @@ rm -rf %{buildroot}
 
 %files
 %{_bindir}/%{name}
+%{_bindir}/%{name}-util
 %{_datadir}/%{name}
 %{_unitdir}/%{name}-*.service
 %attr(-, %{name}, -) %{_sysconfdir}/%{name}

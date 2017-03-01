@@ -11,7 +11,7 @@ Currently, the RPM has been tested to work with following versions of Accumulo &
 
 1. Install rpmbuild
 
-	      sudo yum install rpm-build
+        sudo yum install rpm-build
 
 2. Build a non-snapshot version of Accumulo and copy to 
 
@@ -50,12 +50,8 @@ Currently, the RPM has been tested to work with following versions of Accumulo &
 
         sudo rpm -i accumulo-2.0.0-1.x86_64.rpm
 
-2. Copy and edit configuration files. Make sure to set `HADOOP_PREFIX` and `ZOOKEEPER_HOME`
-   in accumulo.conf:
-
-        sudo -u accumulo cp /etc/accumulo/examples/accumulo.conf /etc/accumulo
-        sudo -u accumulo cp /etc/accumulo/examples/accumulo-site.xml /etc/accumulo-site.xml
-        vim /etc/accumulo/accumulo.conf
+2. Edit the configuration files `accumulo-site.xml` and `accumulo-env.sh` in `/etc/accumulo`.
+   Make sure to set `HADOOP_PREFIX` and `ZOOKEEPER_HOME`.
 
 3. Initialize Accumulo
 
