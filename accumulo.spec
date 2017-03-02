@@ -70,7 +70,7 @@ rm -rf %{buildroot}
 
 %pre
 getent group %{name} >/dev/null || groupadd -r %{name}
-getent passwd %{name} >/dev/null || useradd --comment "%{longproj}" --shell /sbin/nologin -M -r -g %{name} 
+getent passwd %{name} >/dev/null || useradd --shell /sbin/nologin -g %{name} -M -r %{name}
 
 %preun
 %systemd_preun %{name}-master.service
