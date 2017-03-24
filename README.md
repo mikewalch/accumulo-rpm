@@ -48,7 +48,7 @@ Currently, the RPM has been tested to work with following versions of Accumulo &
 
 1. Install Accumulo RPM
 
-        sudo rpm -i accumulo-2.0.0-1.x86_64.rpm
+        sudo yum install accumulo-2.0.0-1.x86_64.rpm
 
 2. Edit the configuration files `accumulo-site.xml` and `accumulo-env.sh` in `/etc/accumulo`.
    Make sure to set `HADOOP_PREFIX` and `ZOOKEEPER_HOME`.

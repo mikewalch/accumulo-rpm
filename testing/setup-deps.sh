@@ -50,7 +50,7 @@ cat <<EOF > $HADOOP_PREFIX/etc/hadoop/core-site.xml
 <configuration>
   <property>
     <name>fs.defaultFS</name> 
-    <value>hdfs://localhost:9000</value>
+    <value>hdfs://localhost:8020</value>
   </property>
 </configuration>
 EOF

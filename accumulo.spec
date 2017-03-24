@@ -17,7 +17,7 @@ Source4: %{name}-tracer.service
 Source5: %{name}-monitor.service
 Source6: %{name}-multi-tserver-1.service
 Source7: %{name}-multi-tserver-2.service
-
+Requires: gcc-c++
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 
 %description
@@ -37,8 +37,8 @@ install -d -m 755  %{buildroot}/%{_var}/log/%{name}
 install -d -m 755  %{buildroot}/%{_datadir}/%{name}
 install -d -m 755  %{buildroot}/%{_datadir}/%{name}/bin
 cp -a bin/{%{name},%{name}-util} %{buildroot}/%{_datadir}/%{name}/bin/
-sed -i -e 's/conf="\${basedir}\/conf"/conf="\/etc\/accumulo"/' %{buildroot}%{_datadir}/%{name}/bin/%{name}
-sed -i -e 's/conf="\${basedir}\/conf"/conf="\/etc\/accumulo"/' %{buildroot}%{_datadir}/%{name}/bin/%{name}-util
+sed -i -e 's/conf=.*/conf="\/etc\/accumulo"/' %{buildroot}%{_datadir}/%{name}/bin/%{name}
+sed -i -e 's/conf=.*/conf="\/etc\/accumulo"/' %{buildroot}%{_datadir}/%{name}/bin/%{name}-util
 cp -a lib docs %{buildroot}/%{_datadir}/%{name}/
 cp -a conf %{buildroot}/%{_sysconfdir}/%{name}
 sed -i -e 's/export ACCUMULO_LOG_DIR=.*/export ACCUMULO_LOG_DIR=\/var\/log\/accumulo/' %{buildroot}/%{_sysconfdir}/%{name}/%{name}-env.sh
@@ -63,10 +63,10 @@ rm -rf %{buildroot}
 %files
 %{_bindir}/%{name}
 %{_bindir}/%{name}-util
-%{_datadir}/%{name}
 %{_unitdir}/%{name}-*.service
-%attr(-, %{name}, -) %{_sysconfdir}/%{name}
-%attr(-, %{name}, -) %{_var}/log/%{name}
+%{_datadir}/%{name}
+%attr(-, %{name}, %{name}) %{_sysconfdir}/%{name}
+%attr(-, %{name}, %{name}) %{_var}/log/%{name}
 
 %pre
 getent group %{name} >/dev/null || groupadd -r %{name}
@@ -81,6 +81,9 @@ getent passwd %{name} >/dev/null || useradd --shell /sbin/nologin -g %{name} -M 
 %systemd_preun %{name}-multi-tserver-1.service
 %systemd_preun %{name}-multi-tserver-2.service
 
+%post
+%{_bindir}/%{name}-util build-native
+
 %postun
 %systemd_postun_with_restart %{name}-master.service
 %systemd_postun_with_restart %{name}-tserver.service
@@ -89,3 +92,4 @@ getent passwd %{name} >/dev/null || useradd --shell /sbin/nologin -g %{name} -M 
 %systemd_postun_with_restart %{name}-monitor.service
 %systemd_postun_with_restart %{name}-multi-tserver-1.service
 %systemd_postun_with_restart %{name}-multi-tserver-2.service
+rm -rf %{_datadir}/%{name}
